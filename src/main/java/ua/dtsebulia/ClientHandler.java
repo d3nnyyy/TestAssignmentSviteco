@@ -7,15 +7,32 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class ClientHandler extends Thread {
 
     private Socket clientSocket;
+    private Logger logger;
     private Map<String, String> commands;
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
         this.commands = loadCommandsFromFile();
+        initializeLogger();
+    }
+
+    private void initializeLogger() {
+        logger = Logger.getLogger(ClientHandler.class.getName());
+
+        try {
+            FileHandler fileHandler = new FileHandler("LogFile.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Map<String, String> loadCommandsFromFile() {
@@ -26,11 +43,13 @@ public class ClientHandler extends Thread {
     }
 
     private String processClientMessage(String clientMessage) {
-        if (clientMessage.matches(".*[a-zA-Z0-9]+.*")) {
-            return alternateCaseAndUnderscore(clientMessage);
-        } else if (clientMessage.matches("\\d+")) {
+
+
+        if (clientMessage.matches("\\d+")) {
             int number = Integer.parseInt(clientMessage);
             return String.valueOf(number * 1000);
+        } else if (clientMessage.matches(".*[a-zA-Z0-9]+.*")) {
+            return alternateCaseAndUnderscore(clientMessage);
         } else {
             return processCommand(clientMessage);
         }
@@ -68,19 +87,20 @@ public class ClientHandler extends Thread {
             String clientMessage;
 
             while ((clientMessage = reader.readLine()) != null) {
-
                 System.out.println("Client message: " + clientMessage);
                 String response = processClientMessage(clientMessage);
 
                 writer.println("Server response: " + response);
                 System.out.println("Response sent: " + response);
 
+                logger.info("Client message: " + clientMessage);
+                logger.info("Server response: " + response);
             }
 
             clientSocket.close();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
