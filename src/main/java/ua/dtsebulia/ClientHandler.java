@@ -26,7 +26,7 @@ public class ClientHandler extends Thread {
     }
 
     private String processClientMessage(String clientMessage) {
-        if (clientMessage.matches("[a-zA-Z]+")) {
+        if (clientMessage.matches(".*[a-zA-Z0-9]+.*")) {
             return alternateCaseAndUnderscore(clientMessage);
         } else if (clientMessage.matches("\\d+")) {
             int number = Integer.parseInt(clientMessage);

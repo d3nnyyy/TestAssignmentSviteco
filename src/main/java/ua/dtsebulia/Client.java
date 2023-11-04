@@ -13,8 +13,8 @@ public class Client {
             System.out.println("Connected to the server.");
 
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String userInputString;
             while (true) {
@@ -25,8 +25,8 @@ public class Client {
                     break;
                 }
 
-                out.println(userInputString);
-                String serverResponse = in.readLine();
+                writer.println(userInputString);
+                String serverResponse = reader.readLine();
                 System.out.println("Server response: " + serverResponse);
             }
 
