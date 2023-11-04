@@ -1,9 +1,6 @@
 package ua.dtsebulia;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +34,21 @@ public class ClientHandler extends Thread {
 
     private Map<String, String> loadCommandsFromFile() {
         Map<String, String> commands = new HashMap<>();
-        commands.put("command1", "This is command 1");
-        commands.put("GetSet5", "This is GetSet5 command");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("Commands"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    commands.put(parts[0], parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return commands;
     }
+
 
     private String processClientMessage(String clientMessage) {
 
