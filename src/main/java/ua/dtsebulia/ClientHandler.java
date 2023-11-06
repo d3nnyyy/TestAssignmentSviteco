@@ -94,31 +94,21 @@ public class ClientHandler extends Thread {
      */
     private String processClientMessage(String clientMessage) {
 
+        if (commands.containsKey(clientMessage)) {
+            return commands.get(clientMessage);
+        }
         // If the message is a number, multiply it by 1000.
         if (clientMessage.matches("\\d+")) {
             int number = Integer.parseInt(clientMessage);
             return String.valueOf(number * 1000);
 
             // If the message contains letters or numbers, alternate the case of letters and replace whitespace with underscores.
-        } else if (clientMessage.matches(".*[a-zA-Z0-9]+.*")) {
-            return alternateCaseAndUnderscore(clientMessage);
-
-            // In all other cases, process the message as a command.
-        } else {
-            return processCommand(clientMessage);
         }
-    }
-
-    /**
-     * Processes a command from the client.
-     *
-     * @param clientMessage The command received from the client.
-     * @return The response to the command or "Unknown command" if not found.
-     */
-    private String processCommand(String clientMessage) {
-
-        // Return the response to the command or "Unknown command" if not found.
-        return commands.getOrDefault(clientMessage, "Unknown command");
+        if (clientMessage.matches(".*[a-zA-Z0-9]+.*")) {
+            return alternateCaseAndUnderscore(clientMessage);
+        }
+        // In all other cases, process the message as a command.
+        return "Unknown command";
     }
 
     /**
