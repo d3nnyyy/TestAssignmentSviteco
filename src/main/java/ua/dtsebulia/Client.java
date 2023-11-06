@@ -16,10 +16,7 @@ public class Client {
      * @param args Command-line arguments (not used in this application).
      */
     public static void main(String[] args) {
-        try {
-
-            // Create a new Socket to connect to the server.
-            Socket socket = new Socket("localhost", 12345);
+        try (Socket socket = new Socket("localhost", 12345)){
 
             // Print a message that the connection was successful.
             System.out.println("Connected to the server.");
@@ -59,8 +56,6 @@ public class Client {
                 System.out.println("Server response: " + serverResponse);
             }
 
-            // Close the socket.
-            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

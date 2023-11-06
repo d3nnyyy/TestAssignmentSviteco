@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
@@ -210,8 +211,8 @@ public class ClientHandler extends Thread {
                 System.out.println("Response sent: " + response);
 
                 // Log the client message and response.
-                logger.info("Client message: " + clientMessage);
-                logger.info("Server response: " + response);
+                logger.log(Level.INFO, "Client message: {0}", clientMessage);
+                logger.log(Level.INFO, "Server response: {0}", response);
             }
 
             // Close the client socket.
