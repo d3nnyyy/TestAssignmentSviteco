@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -16,6 +19,8 @@ public class ClientHandler extends Thread {
     private Socket clientSocket;
     private Logger logger;
     private Map<String, String> commands;
+    private PrintWriter writer;
+    private int counter = 0;
 
     /**
      * Constructor for the ClientHandler class.
@@ -61,6 +66,7 @@ public class ClientHandler extends Thread {
 
         try {
 
+            writer = new PrintWriter(clientSocket.getOutputStream(), true);
             // Create a new BufferedReader to read the file.
             BufferedReader reader = new BufferedReader(new FileReader("Commands"));
             String line;
@@ -88,7 +94,7 @@ public class ClientHandler extends Thread {
      */
     private String processClientMessage(String clientMessage) {
 
-            // If the message is a number, multiply it by 1000.
+        // If the message is a number, multiply it by 1000.
         if (clientMessage.matches("\\d+")) {
             int number = Integer.parseInt(clientMessage);
             return String.valueOf(number * 1000);
@@ -154,10 +160,39 @@ public class ClientHandler extends Thread {
     }
 
     /**
-     * The main method to run the ClientHandler.
+     * Sends periodic messages to the client.
      */
+    private void sendPeriodicMessages() {
+
+        // Create a new ScheduledExecutorService to run the periodic message thread.
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        // Schedule the periodic message thread to run every 10 seconds.
+        executor.scheduleAtFixedRate(() -> {
+
+            // Create a message to send to the client.
+            String message = "Counter " + counter + ", Time " + java.time.LocalDateTime.now();
+
+            // Send the message to the client.
+            writer.println(message);
+
+            // Print the message to the console.
+            System.out.println("Sent periodic message to the client: " + message);
+
+            // Increment the counter.
+            counter++;
+        }, 0, 10, TimeUnit.SECONDS);
+    }
+
     @Override
     public void run() {
+
+        // Create a periodic message thread.
+        Thread periodicMessageThread = new Thread(this::sendPeriodicMessages);
+
+        // Start the periodic message thread.
+        periodicMessageThread.start();
+
         try {
 
             // Create a new BufferedReader to read messages from the client.

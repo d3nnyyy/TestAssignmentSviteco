@@ -1,6 +1,7 @@
 package ua.dtsebulia;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,6 +19,7 @@ public class Server {
 
             // Print a message that the server is ready to accept connections.
             System.out.println("Server started");
+            createCommandsFile();
 
             // Listen for connections until the program is terminated.
             while (true) {
@@ -37,6 +39,22 @@ public class Server {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Create a "Commands" file with initial commands.
+     */
+    private static void createCommandsFile() {
+
+        // Try-with-resources block to automatically close the PrintWriter.
+        try (PrintWriter writer = new PrintWriter("Commands")) {
+
+            // Add initial commands to the "Commands" file.
+            writer.println("command1:This is command 1");
+            writer.println("GetSet5:This is GetSet5 command");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
